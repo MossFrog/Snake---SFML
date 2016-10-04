@@ -3,15 +3,8 @@
 
 using namespace std;
 
-//-- Struct for storing sections of the Snake (Blocks) --//
-struct snakeSection
-{
-	sf::Vector2f position;
-	sf::RectangleShape render;
-	sf::RectangleShape innerRender;
-};
-
 void updateRender(snakeSection & actualSection);
+void teleportCheck(sf::Vector2f & snakeHeadPos);
 
 int main()
 {
@@ -38,9 +31,13 @@ int main()
 
 	//-- Definition of the snake "head" --//
 	snakeSection snakeHead;
-	snakeHead.position = sf::Vector2f(100, 100);
+	snakeHead.position = sf::Vector2f(410, 310);
 	snakeHead.render = defaultRect;
 	snakeHead.innerRender = defaultInnerRect;
+
+	//-- Clocks and timers --//
+	sf::Clock moveTimer;
+	moveTimer.restart();
 
 	//------------------------//
 
@@ -60,27 +57,55 @@ int main()
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		{
-			
+			mainDirection = "North";
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
 		{
-			
+			mainDirection = "South";
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 		{
-			
+			mainDirection = "West";
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 		{
-			
+			mainDirection = "East";
+		}
+
+
+		if (moveTimer.getElapsedTime().asMilliseconds() > 400)
+		{
+			if (mainDirection == "East")
+			{
+				snakeHead.position.x += 20;
+			}
+
+			else if (mainDirection == "West")
+			{
+				snakeHead.position.x -= 20;
+			}
+
+			else if (mainDirection == "South")
+			{
+				snakeHead.position.y += 20;
+			}
+
+			else if (mainDirection == "North")
+			{
+				snakeHead.position.y -= 20;
+			}
+
+			//-- Handle Teleportation --//
+			teleportCheck(snakeHead.position);
+
+			moveTimer.restart();
 		}
 
 		//-- Get the Mouse position to check button relativity --//
 		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
-
 
 		//-- Update all the rendered elements --//
 		updateRender(snakeHead);
@@ -101,4 +126,27 @@ void updateRender(snakeSection & actualSection)
 {
 	actualSection.render.setPosition(actualSection.position);
 	actualSection.innerRender.setPosition(actualSection.position);
+}
+
+void teleportCheck(sf::Vector2f & snakeHeadPos)
+{
+	if (snakeHeadPos.x > 800)
+	{
+		snakeHeadPos.x = 10;
+	}
+
+	else if (snakeHeadPos.x < 0)
+	{
+		snakeHeadPos.x = 790;
+	}
+
+	else if (snakeHeadPos.y < 0)
+	{
+		snakeHeadPos.y = 590;
+	}
+
+	else if (snakeHeadPos.y > 600)
+	{
+		snakeHeadPos.y = 10;
+	}
 }
