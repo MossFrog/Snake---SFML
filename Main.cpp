@@ -1,6 +1,5 @@
 #include "Main.h"
 
-
 using namespace std;
 
 void updateRender(snakeSection & actualSection);
@@ -11,13 +10,15 @@ int main()
 	//-- Set the resolution to 16:9 preferred resolution for landscape mobile phones --//
 	//-- Disable keyrepeat events to make the game tap oriented --//
 	//-- Limit the framerate to prevent screen tearing (although this does cause dirty pixels) --//
-	sf::RenderWindow window(sf::VideoMode(800, 600), "Snake - SFML", sf::Style::Close);
-	window.setFramerateLimit(120);
-	window.setKeyRepeatEnabled(false);
+	sf::RenderWindow mainWindow(sf::VideoMode(800, 600), "Snake - SFML", sf::Style::Close);
+	mainWindow.setFramerateLimit(120);
+	mainWindow.setKeyRepeatEnabled(false);
 
 
 	//-- Definitions Section --//
 	string mainDirection = "East";
+
+	vector<snakeSection> snakeBody;
 
 	//-- rectangleShapes used as a default renders for each snakeSection --//
 	sf::RectangleShape defaultRect;
@@ -35,19 +36,30 @@ int main()
 	snakeHead.render = defaultRect;
 	snakeHead.innerRender = defaultInnerRect;
 
+	//-- Food's random spawn position --//
+	RandGen newGen;
+
+	//-- Definition of the snake's "food" --//
+	snakeFood mainFood;
+	mainFood.render.setSize(sf::Vector2f(6, 6));
+	mainFood.render.setOrigin(3, 3);
+	mainFood.render.setPosition(sf::Vector2f(newGen.RandInt(40)*20 + 10, newGen.RandInt(30)*20 + 10));
+	mainFood.position = mainFood.render.getPosition();
+
+
 	//-- Clocks and timers --//
 	sf::Clock moveTimer;
 	moveTimer.restart();
 
 	//------------------------//
 
-	while (window.isOpen())
+	while (mainWindow.isOpen())
 	{
 		sf::Event event;
-		while (window.pollEvent(event))
+		while (mainWindow.pollEvent(event))
 		{
 			if (event.type == sf::Event::Closed)
-				window.close();
+				mainWindow.close();
 
 			if (event.type == sf::Event::KeyPressed)
 			{
@@ -105,18 +117,20 @@ int main()
 		}
 
 		//-- Get the Mouse position to check button relativity --//
-		sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+		sf::Vector2i mousePos = sf::Mouse::getPosition(mainWindow);
 
 		//-- Update all the rendered elements --//
 		updateRender(snakeHead);
 
-		window.clear(sf::Color::Black);
+		mainWindow.clear(sf::Color::Black);
 
 
-		window.draw(snakeHead.render);
-		window.draw(snakeHead.innerRender);
+		mainWindow.draw(snakeHead.render);
+		mainWindow.draw(snakeHead.innerRender);
 
-		window.display();
+		mainWindow.draw(mainFood.render);
+
+		mainWindow.display();
 	}
 
 	return 0;
