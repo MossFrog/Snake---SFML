@@ -6,6 +6,7 @@ void updateRender(snakeSection & actualSection);
 void teleportCheck(sf::Vector2f & snakeHeadPos);
 void randomFoodSpawn(snakeFood & mainFood);
 bool foodCheck(snakeFood & mainFood, snakeSection & snakeHead);
+void extendSnake(snakeSection & snakeHead, vector<snakeSection> & snakeBody);
 
 int main()
 {
@@ -18,12 +19,14 @@ int main()
 
 
 	//-- Definitions Section --//
+	int gameState = 1;
 	int score = 0;
 	//-- Clock Cycle in miliseconds --//
 	int clockCycle = 400;
 	string mainDirection = "East";
 
 	vector<snakeSection> snakeBody;
+	bool addSection = false;
 
 	//-- rectangleShapes used as a default renders for each snakeSection --//
 	sf::RectangleShape defaultRect;
@@ -72,6 +75,13 @@ int main()
 			}
 		}
 
+		//-- Extend the snake if addSection is true --//
+		if (addSection)
+		{
+			extendSnake(snakeHead, snakeBody);
+			addSection = false;
+		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
 		{
 			mainDirection = "North";
@@ -92,9 +102,11 @@ int main()
 			mainDirection = "East";
 		}
 
-
+		//-- Update the snakeHead depending on the direction --//
 		if (moveTimer.getElapsedTime().asMilliseconds() > clockCycle)
 		{
+			snakeHead.prevPosition = snakeHead.position;
+
 			if (mainDirection == "East")
 			{
 				snakeHead.position.x += 20;
@@ -118,6 +130,20 @@ int main()
 			//-- Handle Teleportation --//
 			teleportCheck(snakeHead.position);
 
+			//-- Update the snakeBody --//
+			if (snakeBody.size() > 0)
+			{
+				snakeBody[0].prevPosition = snakeBody[0].position;
+				snakeBody[0].position = snakeHead.prevPosition;
+				updateRender(snakeBody[0]);
+			}
+
+			for (int i = 1; i < snakeBody.size(); i++)
+			{
+				snakeBody[i].prevPosition = snakeBody[i].position;
+				snakeBody[i].position = snakeBody[i - 1].prevPosition;
+				updateRender(snakeBody[i]);
+			}
 
 			//-- Check if the food has been eaten --//
 			if (foodCheck(mainFood, snakeHead))
@@ -127,6 +153,9 @@ int main()
 				{
 					clockCycle -= 50;
 				}
+
+				//-- Extend the SnakeBody by 1 unit --//
+				addSection = true;
 			}
 
 			moveTimer.restart();
@@ -143,6 +172,12 @@ int main()
 
 		mainWindow.draw(snakeHead.render);
 		mainWindow.draw(snakeHead.innerRender);
+
+		for (int i = 0; i < snakeBody.size(); i++)
+		{
+			mainWindow.draw(snakeBody[i].render);
+			mainWindow.draw(snakeBody[i].innerRender);
+		}
 
 		mainWindow.draw(mainFood.render);
 
@@ -196,4 +231,27 @@ bool foodCheck(snakeFood & mainFood, snakeSection & snakeHead)
 	}
 
 	return false;
+}
+
+void extendSnake(snakeSection & snakeHead, vector<snakeSection> & snakeBody)
+{
+	snakeSection newSection;
+	newSection = snakeHead;
+
+	if (snakeBody.size() == 0)
+	{ 
+		newSection.position = snakeHead.prevPosition;
+		newSection.innerRender.setPosition(snakeHead.prevPosition);
+		newSection.render.setPosition(snakeHead.prevPosition);
+	}
+
+	else
+	{
+		newSection.position = snakeBody[snakeBody.size() - 1].prevPosition;
+		newSection.innerRender.setPosition(newSection.position);
+		newSection.render.setPosition(newSection.position);
+	}
+
+	snakeBody.push_back(newSection);
+	
 }

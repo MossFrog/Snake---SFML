@@ -15,6 +15,7 @@ struct snakeSection
 	sf::Vector2f position;
 	sf::RectangleShape render;
 	sf::RectangleShape innerRender;
+	sf::Vector2f prevPosition;
 };
 
 struct snakeFood
