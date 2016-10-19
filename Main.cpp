@@ -4,6 +4,8 @@ using namespace std;
 
 void updateRender(snakeSection & actualSection);
 void teleportCheck(sf::Vector2f & snakeHeadPos);
+void randomFoodSpawn(snakeFood & mainFood);
+bool foodCheck(snakeFood & mainFood, snakeSection & snakeHead);
 
 int main()
 {
@@ -16,6 +18,9 @@ int main()
 
 
 	//-- Definitions Section --//
+	int score = 0;
+	//-- Clock Cycle in miliseconds --//
+	int clockCycle = 400;
 	string mainDirection = "East";
 
 	vector<snakeSection> snakeBody;
@@ -88,7 +93,7 @@ int main()
 		}
 
 
-		if (moveTimer.getElapsedTime().asMilliseconds() > 400)
+		if (moveTimer.getElapsedTime().asMilliseconds() > clockCycle)
 		{
 			if (mainDirection == "East")
 			{
@@ -112,6 +117,17 @@ int main()
 
 			//-- Handle Teleportation --//
 			teleportCheck(snakeHead.position);
+
+
+			//-- Check if the food has been eaten --//
+			if (foodCheck(mainFood, snakeHead))
+			{
+				randomFoodSpawn(mainFood);
+				if (clockCycle >= 100)
+				{
+					clockCycle -= 50;
+				}
+			}
 
 			moveTimer.restart();
 		}
@@ -163,4 +179,21 @@ void teleportCheck(sf::Vector2f & snakeHeadPos)
 	{
 		snakeHeadPos.y = 10;
 	}
+}
+
+void randomFoodSpawn(snakeFood & mainFood)
+{
+	RandGen newGenerator;
+	mainFood.render.setPosition(sf::Vector2f(newGenerator.RandInt(40) * 20 + 10, newGenerator.RandInt(30) * 20 + 10));
+	mainFood.position = mainFood.render.getPosition();
+}
+
+bool foodCheck(snakeFood & mainFood, snakeSection & snakeHead)
+{
+	if (mainFood.position == snakeHead.position)
+	{
+		return true;
+	}
+
+	return false;
 }
