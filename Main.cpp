@@ -27,6 +27,7 @@ int main()
 
 	vector<snakeSection> snakeBody;
 	bool addSection = false;
+	bool moveEnable = true;
 
 	//-- rectangleShapes used as a default renders for each snakeSection --//
 	sf::RectangleShape defaultRect;
@@ -82,24 +83,28 @@ int main()
 			addSection = false;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && mainDirection != "South" && moveEnable)
 		{
 			mainDirection = "North";
+			moveEnable = false;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && mainDirection != "North" && moveEnable)
 		{
 			mainDirection = "South";
+			moveEnable = false;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && mainDirection != "East" && moveEnable)
 		{
 			mainDirection = "West";
+			moveEnable = false;
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && mainDirection != "West" && moveEnable)
 		{
 			mainDirection = "East";
+			moveEnable = false;
 		}
 
 		//-- Update the snakeHead depending on the direction --//
@@ -159,6 +164,7 @@ int main()
 			}
 
 			moveTimer.restart();
+			moveEnable = true;
 		}
 
 		//-- Get the Mouse position to check button relativity --//
@@ -253,5 +259,4 @@ void extendSnake(snakeSection & snakeHead, vector<snakeSection> & snakeBody)
 	}
 
 	snakeBody.push_back(newSection);
-	
 }
