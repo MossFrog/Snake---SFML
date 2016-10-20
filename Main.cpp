@@ -10,7 +10,6 @@ void extendSnake(snakeSection & snakeHead, vector<snakeSection> & snakeBody);
 
 int main()
 {
-	//-- Set the resolution to 16:9 preferred resolution for landscape mobile phones --//
 	//-- Disable keyrepeat events to make the game tap oriented --//
 	//-- Limit the framerate to prevent screen tearing (although this does cause dirty pixels) --//
 	sf::RenderWindow mainWindow(sf::VideoMode(800, 600), "Snake - SFML", sf::Style::Close);
@@ -28,6 +27,26 @@ int main()
 	vector<snakeSection> snakeBody;
 	bool addSection = false;
 	bool moveEnable = true;
+
+	//-- Declaring and loading the font into the software --//
+	sf::Font mainFont;
+
+	if (!mainFont.loadFromFile("ProFontWindows.ttf"))
+	{
+	}
+	else
+	{
+		cout << "Loaded 'ProFontWindows.ttf'" << endl;
+	}
+
+	//-- Text and UI elements --//
+	sf::Text scoreText;
+	scoreText.setFont(mainFont);
+	scoreText.setCharacterSize(35);
+	scoreText.setPosition(10, 10);
+	scoreText.setString("Score: " + itoa(score));
+	scoreText.setColor(sf::Color(255, 255, 255, 100));
+
 
 	//-- rectangleShapes used as a default renders for each snakeSection --//
 	sf::RectangleShape defaultRect;
@@ -170,6 +189,9 @@ int main()
 		//-- Get the Mouse position to check button relativity --//
 		sf::Vector2i mousePos = sf::Mouse::getPosition(mainWindow);
 
+		//-- Update all textual and UI elements --//
+		scoreText.setString("Score: " + itoa(score));
+
 		//-- Update all the rendered elements --//
 		updateRender(snakeHead);
 
@@ -186,6 +208,8 @@ int main()
 		}
 
 		mainWindow.draw(mainFood.render);
+
+		mainWindow.draw(scoreText);
 
 		mainWindow.display();
 	}

@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "randgen.h"
+#include "strutils.h"
 
 //-- Struct for storing sections of the Snake (Blocks) --//
 struct snakeSection
